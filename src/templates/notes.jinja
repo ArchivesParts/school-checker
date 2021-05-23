@@ -1,0 +1,114 @@
+{% extends 'layout.jinja' %} 
+
+{% block content %} 
+<div class="list-group">
+{% for note in notes %}
+
+
+
+    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+        <h5 class="mb-1">
+            {%if note['valeur']%}
+                <span class="badge 
+                    {% if (20*(note['valeur']| replace(",", ".")|float)/(note['noteSur']|int))|round(2, 'floor')<5 %}badge-danger
+                    {%elif (20*(note['valeur']| replace(",", ".")|float)/(note['noteSur']|int))|round(2, 'floor')<10 %}badge-warning
+                    {%elif (20*(note['valeur']| replace(",", ".")|float)/(note['noteSur']|int))|round(2, 'floor')<15 %}badge-primary
+                    {%else%} badge-success{%endif%}"
+                ">{{ (20*(note['valeur']| replace(",", ".")|float)/(note['noteSur']|int))|round(2, 'floor') }}/20 [coef :{{ note['coef'] }} - {{ note['valeur'] }}/{{ note['noteSur'] }}]</span>
+            {%else%}
+                <span class="badge badge-light" > - </span>
+            {%endif%}
+             {{ note['codeMatiere'] }} - {{ note['libelleMatiere'] }}</h5>
+            <small class="text-muted">
+                <span class="badge badge-info" data-toggle="tooltip" title="{{ note['dateSaisie'] }}">{{ note['date'] }}</span>
+            </small>
+            <button 
+                type="button" 
+                class="btn btn-outline-primary" 
+                onClick="check('{{ note['_id'] }}',this)"
+                {% if note['validated'] %}disabled=disabled checked{%endif%}
+                ><i class="fas {% if note['validated'] %}fa-eye{%else%}fa-eye-slash{%endif%}"></i></button>
+    </div>
+    <small class="text-muted">
+        {{ note['devoir'] }}
+        <span class="badge badge-secondary">{{ note['codeSousMatiere'] }}</span>
+        <span class="badge badge-secondary">{{ note['codePeriode'] }}</span>
+    </small>
+    {%if note['valeur']%}
+    <small class="text-muted">
+    <ul class="list-group">
+        <li class="list-group-item">
+            <div class="progress">
+                <div class="progress-bar" 
+                    role="progressbar" 
+                    aria-valuenow="{{ note['valeur'] }}" 
+                    style="width: {{ 100*(note['valeur']| replace(",", ".")|float)/(note['noteSur']|int) }}%" 
+                    aria-valuemin="0" aria-valuemax="{{ note['noteSur'] }}">{{ (20*(note['valeur']| replace(",", ".")|float)/(note['noteSur']|int))|round(2, 'floor') }}/20</div>
+            </div>
+        </li>
+        <li class="list-group-item">
+            <div class="progress">
+
+                <div class="progress-bar bg-danger" 
+                    role="progressbar" 
+                    aria-valuenow="{{ note['minClasse'] }}" 
+                    style="width: {{ 100*(note['minClasse']| replace(",", ".")|float)/(note['noteSur']|int) }}%" 
+                    aria-valuemin="0" aria-valuemax="{{ note['noteSur'] }}">{{ (20*(note['minClasse']| replace(",", ".")|float)/(note['noteSur']|int))|round(2, 'floor') }}/20</div>
+            </div>
+        </li>
+        <li class="list-group-item">
+            <div class="progress">
+
+                <div class="progress-bar bg-info" 
+                    role="progressbar" 
+                    aria-valuenow="{{ note['moyenneClasse'] }}" 
+                    style="width: {{ 100*(note['moyenneClasse']| replace(",", ".")|float)/(note['noteSur']|int) }}%" 
+                    aria-valuemin="0" aria-valuemax="{{ note['noteSur'] }}">{{ (20*(note['moyenneClasse']| replace(",", ".")|float)/(note['noteSur']|int))|round(2, 'floor') }}/20</div>
+            </div>
+        </li>
+        <li class="list-group-item">
+            <div class="progress">
+
+
+                <div class="progress-bar bg-success" 
+                    role="progressbar" 
+                    aria-valuenow="{{ note['maxClasse'] }}" 
+                    style="width: {{ 100*(note['maxClasse']| replace(",", ".")|float)/(note['noteSur']|int) }}%" 
+                    aria-valuemin="0" aria-valuemax="{{ note['noteSur'] }}">{{ (20*(note['maxClasse']| replace(",", ".")|float)/(note['noteSur']|int))|round(2, 'floor') }}/20</div>
+                
+            </div>
+        </li>
+        <li class="list-group-item">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" disabled=disabled {% if note['nonSignificatif'] %}checked{%endif%}>
+                <label class="form-check-label" for="defaultCheck1">
+                    Non significatif
+                </label>
+            </div>
+        </li>
+    </ul></small>
+    {%endif%}
+    </hr>
+    {%if note['elementsProgramme']%}
+    <small class="text-muted">
+        Description.
+    <ul class="list-group">
+        {% for elem in note['elementsProgramme'] %}
+        <li class="list-group-item">
+            <span class="badge badge-pill 
+                {% if elem['valeur']=="1"%}badge-danger
+                {%elif elem['valeur']=="2"%}badge-warning
+                {%elif elem['valeur']=="3"%}badge-primary
+                {%else%} badge-success{%endif%}">{{ elem['valeur'] }}</span> {{ elem['descriptif'] }}. {{ elem['libelleCompetence'] }}</li>
+        {% endfor %}
+    </ul></small>
+    {%endif%}
+  </a>
+
+        
+
+        <hr>
+{% endfor %}
+</div>
+{%endblock%}
